@@ -2,7 +2,7 @@
 
 set -eu
 IFS=$(echo -en "\n\b")  # for filenames with spaces
-bold="\033[1;37m" 
+bold="\033[1;37m"
 green="\033[00;32m"
 normal="\033[00m"
 

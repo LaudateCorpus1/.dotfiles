@@ -7,7 +7,7 @@ This repository is also meant to help spin up a new system right away, with comm
 
 ## Simple Usage
 
-Run basic installation:  
+Run basic installation:
 
 ```sh
 # Go to the home directory and clone into dotfiles
@@ -26,7 +26,7 @@ If on Mac, move to the `terminal/` folder to set up the terminal and fonts.
 This script will copy over all files in this repository to the home directory and back up any existing ones with the extension `.old`. All dotfiles will be symlinked to the `dotfiles` folder, so it's best to maintain that folder in the home directory so it can remain under version control.
 
 
-## TODO  
+## TODO
 
 **Install common system necessities with the `install-mac.sh` or `install-linux.sh` scripts.**
 It's necessary to split these into two similar scripts to handle the different package managers available on each system. Example software usually installed includes:
@@ -47,7 +47,7 @@ These are not necessary for systems I'll be SSH-ing into, but _are_ necessary fo
 
 NOTE: Currently, there isn't good Vim support for PureScript and ghc-mod sucks. This makes both editing environments poor. This also requires _way_ more setup than Spacemacs.
 
-**At minimum:**  
+**At minimum:**
 Install necessary software:
 ```sh
 # Install neovim
@@ -60,7 +60,7 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 Then, open any window in vim and use the `:PlugInstall` command to install plugins.
 
 
-**Other Notes:**  
+**Other Notes:**
 Syntax checking is performed using [Ale](https://github.com/w0rp/ale). This requires installing the actual checkers necessary. For my use cases, that includes:
 
 - Rust: [rls](https://github.com/rust-lang-nursery/rls), [rustc](https://www.rust-lang.org/en-US/), [rustfmt](https://github.com/rust-lang-nursery/rustfmt) (Cargo needs special setup; see docs).
@@ -70,7 +70,7 @@ Syntax checking is performed using [Ale](https://github.com/w0rp/ale). This requ
 - Sass: [sass-lint](https://www.npmjs.com/package/sass-lint), [stylelint](https://github.com/stylelint/stylelint)
 
 
-**Actions**  
+**Actions**
 
 Note: everything noted below is already in the path in .bashrc
 
@@ -126,7 +126,7 @@ npm install --save-dev eslint
 ./node_modules/.bin/eslint --init
 ```
 
-**YAML Layer**  
+**YAML Layer**
 - [yamllint](https://yamllint.readthedocs.io/en/latest/)
 
 ```sh
