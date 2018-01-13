@@ -30,6 +30,9 @@ Plug 'scrooloose/nerdtree'
 " File finding
 Plug 'ctrlpvim/ctrlp.vim'
 
+" Coq necessities
+Plug 'the-lambda-church/coquille'
+
 " PureScript necessities
 Plug 'FrigoEU/psc-ide-vim'
 Plug 'purescript-contrib/purescript-vim'
