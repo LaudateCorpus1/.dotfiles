@@ -20,6 +20,7 @@ Plug 'tpope/vim-fugitive'
 
 " Syntax checking
 Plug 'vim-syntastic/syntastic'
+Plug 'neomake/neomake', {'for': 'haskell'}
 
 " Comment blocks
 Plug 'scrooloose/nerdcommenter'
