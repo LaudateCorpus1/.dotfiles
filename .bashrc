@@ -89,7 +89,6 @@ alias la='ls -A'
 alias v='nvim'
 alias vim='nvim'
 alias tmux='tmux -2'
-alias emacs='emacs -nw'  # Open in the terminal
 
 
 ##### COMPLETION #####
