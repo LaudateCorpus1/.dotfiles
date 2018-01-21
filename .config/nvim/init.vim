@@ -54,7 +54,7 @@ call plug#end()
 " https://gist.github.com/paulrouget/ad44d1a907a668d012d23b0c1bdf72f9
 set background=dark
 set termguicolors
-colorscheme base16-default-dark
+colorscheme base16-grayscale-dark
 
 hi vertsplit ctermfg=238 ctermbg=235
 hi LineNr ctermfg=237
