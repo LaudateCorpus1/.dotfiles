@@ -20,7 +20,6 @@ Plug 'tpope/vim-fugitive'
 
 " Syntax checking
 Plug 'vim-syntastic/syntastic'
-Plug 'neomake/neomake', {'for': 'haskell'}
 
 " Comment blocks
 Plug 'scrooloose/nerdcommenter'
@@ -32,14 +31,15 @@ Plug 'scrooloose/nerdtree'
 Plug 'ctrlpvim/ctrlp.vim'
 
 " Coq
-Plug 'tounaishouta/coq.vim'
+Plug 'tounaishouta/coq.vim', {'for': 'coq'}
 
 " PureScript necessities
-Plug 'FrigoEU/psc-ide-vim'
-Plug 'purescript-contrib/purescript-vim'
+Plug 'FrigoEU/psc-ide-vim', {'for': 'purescript'}
+Plug 'purescript-contrib/purescript-vim', {'for': 'purescript'}
 
 " Haskell necessities
 Plug 'parsonsmatt/intero-neovim'
+Plug 'neomake/neomake', {'for': 'haskell'}
 Plug 'eagletmt/ghcmod-vim', {'for': 'haskell'}
 Plug 'shougo/vimproc.vim', {'do' : 'make'}
 Plug 'neovimhaskell/haskell-vim'
@@ -123,6 +123,12 @@ let g:NERDCommentEmptyLines = 1
 " Enable trimming of trailing whitespace when uncommenting
 let g:NERDTrimTrailingWhitespace = 1
 
+" Better Haskell / PureScript defaults
+let g:NERDCustomDelimiters = {
+	\ 'haskell': { 'leftAlt': '{-','rightAlt': '-}', 'left': '-- ', 'right': '' },
+	\ 'purescript': { 'leftAlt': '{-','rightAlt': '-}', 'left': '-- ', 'right': '' },
+\ }
+
 
 "
 " Remap nerdtree toggle with space-nt
@@ -143,16 +149,15 @@ noremap <leader>lc :lclose<CR>
 " Quality of life settings
 "
 
-" Spaces, not tabs.
+" Text
+set encoding=utf-8
 set tabstop=2
+set softtabstop=2
 set shiftwidth=2
+set backspace=2
 set expandtab
-
-" Indents
 set autoindent
-set backspace=indent,eol,start
-set complete-=i
-set smarttab
+set listchars=tab:▸ \
 
 " Trim whitespace on save
 fun! <SID>StripTrailingWhitespaces()
@@ -177,14 +182,17 @@ set wildignore+=*/tmp/*,*/output/*.js,*/node_modules/*,*/bower_components/*,*.so
 " PureScript
 "
 
-nm <buffer> <silent> <leader>t :<C-U>call PSCIDEtype(PSCIDEgetKeyword(), v:true)<CR>
-nm <buffer> <silent> <leader>T :<C-U>call PSCIDEaddTypeAnnotation(matchstr(getline(line(".")), '^\s*\zs\k\+\ze'))<CR>
-nm <buffer> <silent> <leader>s :<C-U>call PSCIDEapplySuggestion()<CR>
-nm <buffer> <silent> <leader>a :<C-U>call PSCIDEaddTypeAnnotation()<CR>
-nm <buffer> <silent> <leader>i :<C-U>call PSCIDEimportIdentifier(PSCIDEgetKeyword())<CR>
-nm <buffer> <silent> <leader>r :<C-U>call PSCIDEload()<CR>
-nm <buffer> <silent> <leader>p :<C-U>call PSCIDEpursuit(PSCIDEgetKeyword())<CR>
-nm <buffer> <silent> <leader>C :<C-U>call PSCIDEcaseSplit("!")<CR>
-nm <buffer> <silent> <leader>f :<C-U>call PSCIDEaddClause("")<CR>
-nm <buffer> <silent> <leader>qa :<C-U>call PSCIDEaddImportQualifications()<CR>
-nm <buffer> <silent> <leader>da :<C-U>call PSCIDEgoToDefinition("", PSCIDEgetKeyword())<CR>
+" See https://github.com/FrigoEU/psc-ide-vim/blob/master/doc/psc-ide-vim.txt
+au FileType purescript nm <buffer> <silent> <leader>L :Plist<CR>
+au FileType purescript nm <buffer> <silent> <leader>l :Pload!<CR>
+au FileType purescript nm <buffer> <silent> <leader>r :Prebuild!<CR>
+au FileType purescript nm <buffer> <silent> <leader>f :PaddClause<CR>
+au FileType purescript nm <buffer> <silent> <leader>t :PaddType<CR>
+au FileType purescript nm <buffer> <silent> <leader>a :Papply<CR>
+au FileType purescript nm <buffer> <silent> <leader>A :Papply!<CR>
+au FileType purescript nm <buffer> <silent> <leader>C :Pcase!<CR>
+au FileType purescript nm <buffer> <silent> <leader>i :Pimport<CR>
+au FileType purescript nm <buffer> <silent> <leader>qa :PaddImportQualifications<CR>
+au FileType purescript nm <buffer> <silent> <leader>g :Pgoto<CR>
+au FileType purescript nm <buffer> <silent> <leader>p :Pursuit<CR>
+au FileType purescript nm <buffer> <silent> <leader>T :Ptype<CR>
