@@ -18,6 +18,9 @@ Plug 'chriskempson/base16-vim'
 " Show Git
 Plug 'tpope/vim-fugitive'
 
+" Time tracking
+Plug 'wakatime/vim-wakatime'
+
 " Syntax checking
 Plug 'vim-syntastic/syntastic'
 
@@ -38,11 +41,11 @@ Plug 'FrigoEU/psc-ide-vim', {'for': 'purescript'}
 Plug 'purescript-contrib/purescript-vim', {'for': 'purescript'}
 
 " Haskell necessities
-Plug 'parsonsmatt/intero-neovim'
-Plug 'neomake/neomake', {'for': 'haskell'}
-Plug 'eagletmt/ghcmod-vim', {'for': 'haskell'}
+Plug 'parsonsmatt/intero-neovim', { 'for': 'haskell' }
+Plug 'neomake/neomake', { 'for': 'haskell' }
+Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
 Plug 'shougo/vimproc.vim', {'do' : 'make'}
-Plug 'neovimhaskell/haskell-vim'
+Plug 'neovimhaskell/haskell-vim', { 'for': 'haskell' }
 
 call plug#end()
 
@@ -81,7 +84,6 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 set statusline+=%=%f\ [\ %l\/%L\ ]
-set fillchars=vert:\ ,stl:\ ,stlnc:\
 
 " Always show statusline
 set laststatus=2
@@ -101,7 +103,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
-let g:syntastic_quiet_messages = { "!level":  "errors" }
+" let g:syntastic_quiet_messages = { "!level":  "errors" }
 
 
 "
@@ -157,7 +159,7 @@ set shiftwidth=2
 set backspace=2
 set expandtab
 set autoindent
-set listchars=tab:▸ \
+set listchars=tab:▸▸
 
 " Trim whitespace on save
 fun! <SID>StripTrailingWhitespaces()
