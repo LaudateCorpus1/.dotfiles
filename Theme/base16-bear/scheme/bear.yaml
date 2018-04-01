@@ -1,0 +1,29 @@
+scheme: "Bear"
+author: "Thomas Honeyman <hello@thomashoneyman.com>"
+
+# white: ffffff
+# near-white: fafbfa
+# light grey: abacab
+# grey: a5a6a5
+# dark grey: 696a69
+# dark blue: 6b828d
+# near black: 2d3135
+# black: 25282C
+# blue: 839dab
+
+base00: "25282c" # darkest, background
+base01: "25282c" # darker, status bars
+base02: "2d3135" # selection
+base03: "696a69" # comments
+base04: "a5a6a5" # dark foreground
+base05: "a5a6a5" # default foreground, carets, delimiters
+base06: "ffffff" # light foreground (rare)
+base07: "ffffff" # light background (rare)
+base08: "a5a6a5" # variables, case, do
+base09: "a5a6a5" # ints, bools, constants
+base0A: "abacab" # "839dab" # types
+base0B: "696a69" # strings
+base0C: "696a69" # regex, escape quotes (rare)
+base0D: "6b828d" # function names, data constructors, module names
+base0E: "a5a6a5" # keywords (import, case, do, if/then)
+base0F: "abacab" # deprecated
