@@ -39,10 +39,8 @@ Plug 'FrigoEU/psc-ide-vim', {'for': 'purescript'}
 Plug 'purescript-contrib/purescript-vim', {'for': 'purescript'}
 
 " Haskell necessities
-Plug 'parsonsmatt/intero-neovim', { 'for': 'haskell' }
-Plug 'neomake/neomake', { 'for': 'haskell' }
-Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
-Plug 'shougo/vimproc.vim', {'do' : 'make'}
+" Plug 'neomake/neomake', { 'for': 'haskell' }
+" Plug 'shougo/vimproc.vim', {'do' : 'make'}
 Plug 'neovimhaskell/haskell-vim', { 'for': 'haskell' }
 
 call plug#end()
@@ -196,3 +194,7 @@ au FileType purescript nm <buffer> <silent> <leader>qa :PaddImportQualifications
 au FileType purescript nm <buffer> <silent> <leader>g :Pgoto<CR>
 au FileType purescript nm <buffer> <silent> <leader>p :Pursuit<CR>
 au FileType purescript nm <buffer> <silent> <leader>T :Ptype<CR>
+
+"
+" Haskell
+"
