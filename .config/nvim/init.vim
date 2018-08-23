@@ -17,7 +17,7 @@ Plug 'chriskempson/base16-vim'
 Plug 'tpope/vim-fugitive'
 
 " Time tracking
-Plug 'wakatime/vim-wakatime'
+" Plug 'wakatime/vim-wakatime'
 
 " Syntax checking
 Plug 'vim-syntastic/syntastic'
@@ -39,8 +39,8 @@ Plug 'FrigoEU/psc-ide-vim', {'for': 'purescript'}
 Plug 'purescript-contrib/purescript-vim', {'for': 'purescript'}
 
 " Haskell necessities
-" Plug 'neomake/neomake', { 'for': 'haskell' }
-" Plug 'shougo/vimproc.vim', {'do' : 'make'}
+Plug 'neomake/neomake', { 'for': 'haskell' }
+Plug 'shougo/vimproc.vim', {'do' : 'make'}
 Plug 'neovimhaskell/haskell-vim', { 'for': 'haskell' }
 
 call plug#end()
@@ -198,3 +198,4 @@ au FileType purescript nm <buffer> <silent> <leader>T :Ptype<CR>
 "
 " Haskell
 "
+let g:syntastic_haskell_checkers=['']
