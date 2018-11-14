@@ -198,4 +198,13 @@ au FileType purescript nm <buffer> <silent> <leader>T :Ptype<CR>
 "
 " Haskell
 "
+
 let g:syntastic_haskell_checkers=['']
+
+
+"
+" JavaScript
+"
+
+let g:syntastic_javascript_checkers = ['eslint']
+let g:syntastic_javascript_eslint_exe = "yarn lint"

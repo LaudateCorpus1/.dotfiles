@@ -142,3 +142,6 @@ shopt -s dirspell 2> /dev/null
 
 # Correct spelling errors in arguments supplied to cd
 shopt -s cdspell 2> /dev/null
+
+export NVM_DIR="/Users/thoneyman/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
