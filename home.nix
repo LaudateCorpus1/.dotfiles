@@ -115,10 +115,6 @@ in
       # save multi-line commands as single entries
       "cmdhist"
     ];
-    initExtra = ''
-      # case-insensitive file completion
-      bind "set-completion-ignore-case on"
-    '';
   };
 
   # irc
