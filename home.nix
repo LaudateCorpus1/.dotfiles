@@ -118,29 +118,6 @@ in
     initExtra = ''
       # case-insensitive file completion
       bind "set-completion-ignore-case on"
-
-      # hyphens and underscores are equivalent
-      bind "set completion-map-case on"
-
-      # display matches for ambiguous patterns on first tab press
-      bind "set show-all-if-ambiguous on"
-
-      # add trailing slash when autocompleting symlinks to directories
-      bind "set mark-symlinked-directories on"
-
-      # tell vim to follow symlinks when opening files
-      function vim() {
-        args=()
-        for i in $@; do
-          if [[ -h $i ]]; then
-            args+=`readlink $i`
-          else
-            args+=$i
-          fi
-        done
-
-      ${pkgs.vim}/bin/vim -p "${args[@]}"
-      }
     '';
   };
 
