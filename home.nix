@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let 
+  bg-path = "~/Pictures/background.jpg";
+
   pulseaudio = pkgs.pulseaudioFull;
 
   # Spotify is terrible on hidpi screens (retina, 4k); this small wrapper 
@@ -11,12 +13,17 @@ let
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/spotify \
-        --add-flags "--force-device-scale-factor=1.75"
+        --add-flags "--force-device-scale-factor=1.8"
     '';
   };
 
-in
+  all-hies = 
+    let 
+      hies = import (fetchTarball "https:/github.com/infinisil/all-hies/tarball/master") {};
+    in 
+      hies.selection { selector = p: { inherit (p) ghc865; }; };
 
+in
 {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -25,15 +32,27 @@ in
   home.packages = with pkgs; [
     # system
     feh playerctl
+
+    # writing
+    typora
+
+    # nix
+    nix-prefetch-git
+
+    # haskell
+    cabal-install cabal2nix
     
     # i3 
     dmenu
 
-    # command line
-    htop
+    # desktop
+    htop ranger zathura albert
 
     # applications
-    firefox spotify-4k slack
+    firefox spotify-4k slack anki 
+
+    # development 
+    tlaplusToolbox kitty
   ];
 
   home.keyboard = {
@@ -43,6 +62,10 @@ in
       "grp:alt_shift_toggle" # toggle variants with alt+shift 
       "caps:escape" # remap caps to escape
     ];
+  };
+
+  gtk = {
+    enable = true;
   };
 
   programs.git = {
@@ -55,7 +78,23 @@ in
     };
     aliases = {
       l = "log --graph --pretty='%Cred%h%Creset - %C(bold blue)<%an>%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)' --abbrev-commit --date=relative";
+      co = "checkout";
+      br = "branch";
+      ci = "commit";
+      st = "status";
+      last = "log -l HEAD";
     };
+  };
+
+  programs.bat = { 
+    enable = true;
+  };
+
+  programs.lsd = {
+    enable = true;
+   
+    # ls, ll, la, lt ...
+    enableAliases = true;
   };
 
   programs.vim = {
@@ -65,15 +104,28 @@ in
     # nix-env -f '<nixpkgs>' -qaP -A vimPlugins
     #
     # 'sensible' included by default
-    plugins = [
+    plugins = with pkgs.vimPlugins; [
       # Writing
-      "goyo" # distraction-free writing; toggle with :Goyo
-      "vim-pencil" # better word-wrapping, markdown, etc.
-      "vim-wordy" # catch usage problems in writing
-      "limelight-vim" # highlight only current paragraph
+      goyo          # distraction-free writing; toggle with :Goyo
+      vim-pencil    # better word-wrapping, markdown, etc.
+      vim-wordy     # catch usage problems in writing
+      limelight-vim # highlight only current paragraph
+
+      # Utilities
+      nerdtree      # directory navigation
+
+      # Languages
+      purescript-vim
+      psc-ide-vim
     ];
 
     extraConfig = ''
+      " no tabs
+      set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
+
+      " nerdtree
+      nmap <leader>nt :NERDTreeToggle<CR>
+
       " set up writing environment when goyo starts
       function! s:goyo_enter()
         set noshowmode
@@ -101,8 +153,7 @@ in
   programs.bash = {
     enable = true;
     shellAliases = {
-      ll = "ls -alF";
-      la = "ls -A";
+      cat = "bat";
     };
     shellOptions = [
       # defaults
@@ -117,74 +168,155 @@ in
     ];
   };
 
+  # tmux
+  programs.tmux = {
+    enable = true;
+    keyMode = "vi";
+  };
+
   # irc
   programs.irssi = {
-    enable = false;
+    enable = true;
     networks = {
       freenode = {
         nick = "thomashoneyman";
         server = {
           address = "chat.freenode.net";
+          port = 6697;
           autoConnect = true;
+          ssl = {
+            enable = true;
+            verify = true;
+          };
         };
         channels = {
           nixos.autoJoin = true;
+          haskell.autoJoin = true;
         };
       };
     };
-  };
-
-  # enable the Nord theme
-  programs.termite = {
-    enable = true;
-    font = "Overpass Mono";
-
-    # https://github.com/arcticicestudio/nord-termite/
-    colorsExtra = ''
-      cursor = #d8dee9
-      cursor_foreground = #2e3440
-      foreground = #d8dee9
-      foreground_bold = #d8dee9
-      background = #2e3440
-      highlight = #4c566a
-      color0  = #3b4252
-      color1  = #bf616a
-      color2  = #a3be8c
-      color3  = #ebcb8b
-      color4  = #81a1c1
-      color5  = #b48ead
-      color6  = #88c0d0
-      color7  = #e5e9f0
-      color8  = #4c566a
-      color9  = #bf616a
-      color10 = #a3be8c
-      color11 = #ebcb8b
-      color12 = #81a1c1
-      color13 = #b48ead
-      color14 = #8fbcbb
-      color15 = #eceff4
+    extraConfig = ''
+      ignores = ({ 
+        level = "JOINS PARTS QUITS NICKS";
+        channels = ("#nixos", "#haskell"); 
+      });
     '';
   };
+
+  programs.alacritty = {
+    enable = true;
+  };
+
+  # kitty
+  xdg.configFile."kitty/kitty.conf".text = ''
+    font_size 12.0
+
+    # https://github.com/arcticicestudio/nord-termite/
+    cursor #d8dee9
+    foreground #d8dee9
+    background #2e3440
+    color0 #3b4252
+    color1 #bf616a
+    color2 #a3be8c
+    color3 #ebcb8b
+    color4 #81a1c1
+    color5 #b48ead
+    color6 #88c0d0
+    color7 #e5e9f0
+    color8 #4c566a
+    color9 #bf616a
+    color10 #a3be8c
+    color11 #ebcb8b
+    color12 #81a1c1
+    color13 #b48ead
+    color14 #8fbcbb
+    color15 #eceff4
+  '';
 
   programs.htop = {
     enable = true;
   };
 
   # ssh
-  programs.ssh.enable = true;
+  programs.ssh = {
+    enable = true;
+  };
 
   # few extensions are in nixpkgs as of yet. good pet project?
   programs.vscode = {
     enable = true;
 
     # overrides manually-installed extensions. almost none in nixpkgs right now.
-    extensions = [ ];
+    extensions = with pkgs.vscode-extensions; [ 
+      # Nix language support
+      bbenoist.Nix
+      alanz.vscode-hie-server
+    ] 
+    # nix-prefetch-url
+    # https://<publisher>.gallery.vsassets.io/_apis/public/gallery/publisher/<publisher>/extension/<name>/<version>/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage
+    ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      { 
+        name =  "code-runner";
+        publisher = "formulahendry";
+        version = "0.9.14";
+        sha256 = "15y5ngcncbhssikx90sx9v3z108w2q3bgvk3j7i7w1v04p5i6wsw";
+      }
+      { 
+        name = "nord-visual-studio-code";
+        publisher = "arcticicestudio";
+        version = "0.12.0";
+        sha256 = "1rraysqw2iqwrfiy5p685x1w2ncf486s14sx02d9xydwri44lgln";
+      }
+      {
+        name = "vim";
+        publisher = "vscodevim";
+        version = "1.10.2";
+        sha256 = "0nvn4kv0dsqd67qz49jxrn0lyqvs63g1ahqbf16qcj9pzzkhk4y7";
+      }
+      {
+        name = "ide-purescript";
+        publisher = "nwolverson";
+        version = "0.20.8";
+        sha256 = "16avxmb1191l641r6pd99lw2cgq8gdfipb9n7d0czx1g9vfjr3ip";
+      }
+      {
+        name = "language-purescript";
+        publisher = "nwolverson";
+        version = "0.2.1";
+        sha256 = "18n35wp55c6k1yr2yrgg2qjmzk0vhz65bygfdk0z2p19pa4qhxzs";
+      }
+      {
+        name = "vscode-purty";
+        publisher = "mvakula";
+        version = "0.3.0";
+        sha256 = "0hjp3c7aw6ykzw6aim72hmissdxmr63fy5nyhzwlljjyzc66m7fs";
+      }
+      {
+        name = "language-haskell";
+        publisher = "justusadam";
+        version = "2.6.0";
+        sha256 = "1891pg4x5qkh151pylvn93c4plqw6vgasa4g40jbma5xzq8pygr4";
+      }
+      # {
+      #   name = "vscode-hie-server";
+      #   publisher = "alanz";
+      #   version = "0.0.28";
+      #   sha256 = "1gfwnr5lgwdgm6hs12fs1fc962j9hirrz2am5rmhnfrwjgainkyr";
+      # }
+    ];
+
+    haskell = {
+      enable = true;
+      hie = {
+        executablePath = "${all-hies}";
+      };
+    };
 
     # vscode settings.json is made read-only and controlled via this section; editing settings
     # in the ui will reveal what to copy over here.
     userSettings = {
       # editor settings
-      "editor.formatOnSave" = true;
+      "editor.formatOnSave" = false;
       "editor.minimap.enabled" = false;
       "editor.fontSize" = 14;
       "editor.lineHeight" = 24;
@@ -195,6 +327,8 @@ in
 
       # languages
       "purescript.addNpmPath" = true;
+      "purescript.addSpagoSources" = true;
+      "purescript.buildCommand" = "spago build -- --json-errors";
 
       # theme
       "workbench.colorTheme" = "Nord";
@@ -224,6 +358,12 @@ in
         "*.js" = "javascript";
       };
     };
+  };
+
+  services.redshift = {
+    enable = true;
+    latitude = "34.052235";
+    longitude = "-118.243683";
   };
 
   services.polybar = {
@@ -492,7 +632,7 @@ in
 
         keybindings = 
         lib.mkOptionDefault {
-          "${modifier}+Return" = "exec termite";
+          "${modifier}+Return" = "exec kitty";
           "${modifier}+q" = "kill";
           "${modifier}+f" = "fullscreen toggle";
 
@@ -500,19 +640,29 @@ in
           "XF86AudioLowerVolume" = "exec ${pulseaudio}/bin/pactl set-sink-volume 0 -5%";
           "XF86AudioMute" = "exec ${pulseaudio}/bin/pactl set-sink-mute 0 toggle";
 
-	  "XF86MonBrightnessUp" = "exec light -A 10%";
-	  "XF86MonBrightnessDown" = "exec light -U 10%";
+          "XF86MonBrightnessUp" = "exec light -A 10%";
+          "XF86MonBrightnessDown" = "exec light -U 10%";
 
-	  "XF86AudioPrev" = "exec ${pkgs.playerctl}/bin/playerctl previous";
-	  "XF86AudioPause" = "exec ${pkgs.playerctl}/bin/playerctl play-pause";
-	  "XF86AudioNext" = "exec ${pkgs.playerctl}/bin/playerctl next";
+          "XF86AudioPrev" = "exec ${pkgs.playerctl}/bin/playerctl previous";
+          "XF86AudioPause" = "exec ${pkgs.playerctl}/bin/playerctl play-pause";
+          "XF86AudioNext" = "exec ${pkgs.playerctl}/bin/playerctl next";
         };
 
-	# ensure these commands are run when i3 is restarted
-	startup = [
-	  { command = "sh ~/.fehbg"; always = true; notification = false; }
-	  { command = "systemctl --user restart polybar"; always = true; notification = false; }
-	];
+        # ensure these commands are run when i3 is restarted
+        startup = [
+          { command = "${pkgs.feh}/bin/feh --bg-fill ${bg-path}";
+            always = true; 
+            notification = false; 
+          }
+          { command = "systemctl --user restart polybar"; 
+            always = true; 
+            notification = false; 
+          }
+          { command = "albert"; 
+            always = true; 
+            notification = false; 
+          }
+        ];
 
       };
 

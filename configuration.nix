@@ -4,6 +4,9 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+
+      # Include configuration for Macbook Pro 2015
+      <nixos-hardware/apple/macbook-pro/12-1>
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -13,6 +16,8 @@
   # Set up networking
   networking.hostName = "nixos"; # Define your hostname.
   networking.networkmanager.enable = true;  # Enables wireless support via networkmanager
+
+  # 
 
   # Select internationalisation properties.
   i18n = {
@@ -34,20 +39,58 @@
       pastebinit
 
       # system
-      networkmanagerapplet fontconfig-ultimate 
+      light powertop networkmanagerapplet 
 
-      # control
-      light # must be installed in configuration.nix (see use below)
+      # fonts
+      fontconfig-ultimate 
     ];
   };
 
-  # setuid wrapper for backlight
+  # wrapper for backlight; 
+  # NOTE: also must enable hardware.brightness.ctl and add user to the "video" group
   programs.light.enable = true;
+
+  powerManagement = {
+    # run powertop --auto-tune on startup
+    powertop.enable = true;
+  };
 
   # List services that you want to enable:
   services = {
     openssh.enable = true;
-    autorandr.enable = true; # automatically change xrandr profiles on display change
+
+    # automatically change xrandr profiles on display change
+    autorandr.enable = true;
+
+    # auto-hibernate on low battery
+    upower.enable = true;
+
+    # monitor and manage CPU temp, throttling as needed
+    thermald.enable = true;
+
+    # monitor and control Macbook Pro fans
+    mbpfan = { 
+      # see mbpfan.nix file in nixpkgs for extra config options
+      enable = true;
+    };
+
+    # Enable dbus + dconf to manage system dialogs ('select download location', etc.)
+    dbus = {
+      packages = with pkgs; [ gnome3.dconf ];
+    };
+
+    # Remap what happens on power key press
+    logind = {
+      extraConfig = ''
+        HandlePowerKey=suspend
+      '';
+    };
+
+    # Untested: enable printing with Brother driversc
+    printing = {
+      enable = true;
+      drivers = with pkgs; [ gutenprint gutenprintBin brlaser ];
+    };
     
     # Enable the X11 windowing system
     xserver = {
@@ -63,7 +106,7 @@
         xterm.enable = false;
         default = "none";
       };
-      
+
       displayManager.lightdm = {
         enable = true;
         autoLogin.enable = true;
@@ -78,7 +121,7 @@
       # Enable touchpad support
       libinput = {
         enable = true;
-        naturalScrolling = true;
+        naturalScrolling = false;
       };
     };
   };
@@ -86,26 +129,47 @@
   fonts = {
     enableFontDir = true;
     enableGhostscriptFonts = true;
-    fontconfig.ultimate.enable = true;
-    fontconfig.ultimate.preset = "osx";
-  
+
+    fontconfig = {
+      enable = true;
+      antialias = true;
+      useEmbeddedBitmaps = true;
+
+      ultimate = {
+        enable = true;
+        preset = "osx";
+      };
+
+      defaultFonts = {
+        serif = [ "Source Serif Pro" "DejaVu Serif" ];
+        sansSerif = [ "Source Sans Pro" "DejaVu Sans" ];
+        monospace = [ "Fira Code" "Hasklig" ];
+      };
+    };
+
     fonts = with pkgs; [
       hasklig
       source-code-pro
       overpass
       nerdfonts
+      fira
+      fira-code
+      fira-mono
     ];
   };
 
-  # Enable sound.
+  # Hardware options
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  hardware = {
+    pulseaudio.enable = true;
+    brightnessctl.enable = true;
+  };
 
   # Define a user account.
   users.extraUsers.trh = {
     isNormalUser = true;
     group = "users";
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "wheel" "networkmanager" "video" ];
     createHome = true;
     uid = 1000;
   };
