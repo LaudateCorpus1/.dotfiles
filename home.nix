@@ -28,7 +28,7 @@ in
     feh playerctl
 
     # writing
-    typora jrnl
+    jrnl typora
 
     # nix
     nix-prefetch-git
