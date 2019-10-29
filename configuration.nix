@@ -14,19 +14,22 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Set up networking
-  networking.hostName = "nixos"; # Define your hostname.
-  networking.networkmanager.enable = true;  # Enables wireless support via networkmanager
+  networking = {
+    hostName = "nixos";
 
-  # 
+    # Enables wireless support via networkmanager
+    networkmanager = {
+      enable = true; 
+    };
+  };
 
   # Select internationalisation properties.
   i18n = {
-    consoleFont = "latarcyrheb-sun32";
+    consoleFont = "latarcyrheb-sun32"; # for larger font sizes on system load
     consoleKeyMap = "dvorak";
     defaultLocale = "en_US.UTF-8";
   };
 
-  # Set your time zone.
   time.timeZone = "America/Los_Angeles";
 
   # List packages installed in system profile.
@@ -66,7 +69,7 @@
     upower.enable = true;
 
     # monitor and manage CPU temp, throttling as needed
-    thermald.enable = true;
+    # thermald.enable = true;
 
     # monitor and control Macbook Pro fans
     mbpfan = { 

@@ -17,12 +17,6 @@ let
     '';
   };
 
-  all-hies = 
-    let 
-      hies = import (fetchTarball "https:/github.com/infinisil/all-hies/tarball/master") {};
-    in 
-      hies.selection { selector = p: { inherit (p) ghc865; }; };
-
 in
 {
   # Let Home Manager install and manage itself.
@@ -34,7 +28,7 @@ in
     feh playerctl
 
     # writing
-    typora
+    typora jrnl
 
     # nix
     nix-prefetch-git
@@ -49,10 +43,13 @@ in
     htop ranger zathura albert
 
     # applications
-    firefox spotify-4k slack anki 
+    firefox spotify-4k slack anki kitty
 
-    # development 
-    tlaplusToolbox kitty
+    # tla+ 
+    tlaplusToolbox 
+
+    # misc
+    xclip # clipboard manager
   ];
 
   home.keyboard = {
@@ -62,6 +59,52 @@ in
       "grp:alt_shift_toggle" # toggle variants with alt+shift 
       "caps:escape" # remap caps to escape
     ];
+  };
+
+  # manage configuration files manually via home-manager
+  home.file = {
+    # configuration for the jrnl config manager
+    ".jrnl_config".text = ''
+      { 
+        "journals": {
+          "default": "~/Dropbox/personal-journal.txt",
+          "work": "~/Dropbox/work-journal.txt"
+        },
+        "editor": "vim",
+        "encrypt": true,
+        "default_hour": 9,
+        "default_minute": 0,
+        "timeformat": "%Y-%m-%d %H:%M",
+        "tagsymbols": "@",
+        "highlight": true,
+        "linewrap": 79
+      }
+    '';
+  };
+
+  systemd.user = { 
+    startServices = true;
+    services = {
+      dropbox = {
+        Unit = {
+          Description = "Dropbox";
+        };
+
+        Service = {
+          ExecStart = "${pkgs.dropbox}/bin/dropbox";
+          ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
+          KillMode = "process";
+          Restart = "on-failure";
+          PrivateTmp = true;
+          ProtectSystem = "full";
+          Nice = 10;
+        };
+
+        Install = {
+          WantedBy = [ "default.target" ];
+        };
+      };
+    };
   };
 
   gtk = {
@@ -297,20 +340,7 @@ in
         version = "2.6.0";
         sha256 = "1891pg4x5qkh151pylvn93c4plqw6vgasa4g40jbma5xzq8pygr4";
       }
-      # {
-      #   name = "vscode-hie-server";
-      #   publisher = "alanz";
-      #   version = "0.0.28";
-      #   sha256 = "1gfwnr5lgwdgm6hs12fs1fc962j9hirrz2am5rmhnfrwjgainkyr";
-      # }
     ];
-
-    haskell = {
-      enable = true;
-      hie = {
-        executablePath = "${all-hies}";
-      };
-    };
 
     # vscode settings.json is made read-only and controlled via this section; editing settings
     # in the ui will reveal what to copy over here.
