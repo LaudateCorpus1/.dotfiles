@@ -39,17 +39,17 @@ in
     # i3 
     dmenu
 
-    # desktop
-    htop ranger zathura albert
+    # desktop 
+    albert
+
+    # command line
+    htop ranger zathura xclip tree
 
     # applications
     firefox spotify-4k slack anki kitty
 
     # tla+ 
     tlaplusToolbox 
-
-    # misc
-    xclip # clipboard manager
   ];
 
   home.keyboard = {
