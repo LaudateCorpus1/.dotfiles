@@ -152,13 +152,12 @@ in
         vim-pencil    # better word-wrapping, markdown, etc.
         limelight-vim # highlight only current paragraph
 
-        # Utilities
-        nerdtree              # directory navigation
-        vim-better-whitespace # trim trailing whitespace
-
         # Languages
         purescript-vim psc-ide-vim
         vim-nix
+
+        # Syntax checking / status
+        syntastic
 
         # Time tracking
         vim-wakatime
@@ -168,12 +167,17 @@ in
       " no tabs
       set tabstop=4 softtabstop=0 expandtab shiftwidth=2 smarttab
 
-      " nerdtree
-      nmap <leader>nt :NERDTreeToggle<CR>
+      " nerdtree-esque with netrw
+      let g:netrw_banner=0
+      let g:netrw_winsize=20
+      let g:netrw_liststyle=3
+      let g:netrw_localrmdir='rm -r'
+      nnoremap <leader>nt :Lexplore<CR>
 
-      " whitespace
-      let g:better_whitespace_enabled = 1 " highlight by default
-      let g:strip_whitespace_on_save = 1  " trim by default
+      " syntastic
+      let g:syntastic_always_populate_loc_list = 1
+      let g:syntastic_auto_loc_list = 1
+      let g:syntastic_check_on_wq = 0
 
       " set up writing environment when goyo starts
       function! s:goyo_enter()
