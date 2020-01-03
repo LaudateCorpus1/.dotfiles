@@ -1,11 +1,11 @@
 { config, pkgs, lib, ... }:
 
-let 
+let
   bg-path = "~/Pictures/background.jpg";
 
   pulseaudio = pkgs.pulseaudioFull;
 
-  # Spotify is terrible on hidpi screens (retina, 4k); this small wrapper 
+  # Spotify is terrible on hidpi screens (retina, 4k); this small wrapper
   # passes a command-line flag to force better scaling.
   spotify-4k = pkgs.symlinkJoin {
     name = "spotify";
@@ -30,16 +30,19 @@ in
     # writing
     jrnl typora
 
-    # nix
+    # nix utilities
     nix-prefetch-git
 
     # haskell
     cabal-install cabal2nix
-    
-    # i3 
+
+    # other languages
+    racket python tlaplusToolbox
+
+    # i3
     dmenu
 
-    # desktop 
+    # desktop
     albert
 
     # command line
@@ -47,16 +50,13 @@ in
 
     # applications
     firefox spotify-4k slack anki kitty
-
-    # tla+ 
-    tlaplusToolbox 
   ];
 
   home.keyboard = {
     layout = "us, us";
     variant = "dvorak, ";
-    options = [ 
-      "grp:alt_shift_toggle" # toggle variants with alt+shift 
+    options = [
+      "grp:alt_shift_toggle" # toggle variants with alt+shift
       "caps:escape" # remap caps to escape
     ];
   };
@@ -65,7 +65,7 @@ in
   home.file = {
     # configuration for the jrnl config manager
     ".jrnl_config".text = ''
-      { 
+      {
         "journals": {
           "default": "~/Dropbox/personal-journal.txt",
           "work": "~/Dropbox/work-journal.txt"
@@ -82,7 +82,7 @@ in
     '';
   };
 
-  systemd.user = { 
+  systemd.user = {
     startServices = true;
     services = {
       dropbox = {
@@ -129,13 +129,13 @@ in
     };
   };
 
-  programs.bat = { 
+  programs.bat = {
     enable = true;
   };
 
   programs.lsd = {
     enable = true;
-   
+
     # ls, ll, la, lt ...
     enableAliases = true;
   };
@@ -145,22 +145,24 @@ in
 
     # to see available plugins:
     # nix-env -f '<nixpkgs>' -qaP -A vimPlugins
-    #
-    # 'sensible' included by default
-    plugins = with pkgs.vimPlugins; [
-      # Writing
-      goyo          # distraction-free writing; toggle with :Goyo
-      vim-pencil    # better word-wrapping, markdown, etc.
-      vim-wordy     # catch usage problems in writing
-      limelight-vim # highlight only current paragraph
+    plugins = with pkgs.vimPlugins;
+      [
+        # Writing
+        goyo          # distraction-free writing; toggle with :Goyo
+        vim-pencil    # better word-wrapping, markdown, etc.
+        limelight-vim # highlight only current paragraph
 
-      # Utilities
-      nerdtree      # directory navigation
+        # Utilities
+        nerdtree              # directory navigation
+        vim-better-whitespace # trim trailing whitespace
 
-      # Languages
-      purescript-vim
-      psc-ide-vim
-    ];
+        # Languages
+        purescript-vim psc-ide-vim
+        vim-nix
+
+        # Time tracking
+        vim-wakatime
+      ];
 
     extraConfig = ''
       " no tabs
@@ -168,6 +170,10 @@ in
 
       " nerdtree
       nmap <leader>nt :NERDTreeToggle<CR>
+
+      " whitespace
+      let g:better_whitespace_enabled = 1 " highlight by default
+      let g:strip_whitespace_on_save = 1  " trim by default
 
       " set up writing environment when goyo starts
       function! s:goyo_enter()
@@ -195,9 +201,11 @@ in
 
   programs.bash = {
     enable = true;
+
     shellAliases = {
       cat = "bat";
     };
+
     shellOptions = [
       # defaults
       "histappend"
@@ -239,9 +247,9 @@ in
       };
     };
     extraConfig = ''
-      ignores = ({ 
+      ignores = ({
         level = "JOINS PARTS QUITS NICKS";
-        channels = ("#nixos", "#haskell"); 
+        channels = ("#nixos", "#haskell");
       });
     '';
   };
@@ -280,66 +288,64 @@ in
     enable = true;
   };
 
-  # ssh
   programs.ssh = {
     enable = true;
   };
 
-  # few extensions are in nixpkgs as of yet. good pet project?
   programs.vscode = {
     enable = true;
 
-    # overrides manually-installed extensions. almost none in nixpkgs right now.
-    extensions = with pkgs.vscode-extensions; [ 
+    # Overrides manually-installed extensions, but there are almost none in
+    # nixpkgs as of 2020-01-01
+    extensions = with pkgs.vscode-extensions; [
       # Nix language support
       bbenoist.Nix
-      alanz.vscode-hie-server
-    ] 
-    # nix-prefetch-url
-    # https://<publisher>.gallery.vsassets.io/_apis/public/gallery/publisher/<publisher>/extension/<name>/<version>/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage
+
+      # Wakatime editor plugin
+      WakaTime.vscode-wakatime
+
+      # Vim bindings
+      vscodevim.vim
+    ]
+
+    # To fetch the SHA256, use `nix-prefetch-url` with this template:
+    #
+    #   https://<publisher>.gallery.vsassets.io/_apis/public/gallery/publisher/<publisher>/extension/<name>/<version>/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage
+
     ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      { 
-        name =  "code-runner";
-        publisher = "formulahendry";
-        version = "0.9.14";
-        sha256 = "15y5ngcncbhssikx90sx9v3z108w2q3bgvk3j7i7w1v04p5i6wsw";
-      }
-      { 
+
+      # The Nord color scheme
+      {
         name = "nord-visual-studio-code";
         publisher = "arcticicestudio";
-        version = "0.12.0";
-        sha256 = "1rraysqw2iqwrfiy5p685x1w2ncf486s14sx02d9xydwri44lgln";
+        version = "0.13.0";
+        sha256 = "15c1gcw00lssq1qiqmkxapw2acgnlixy055wh5pgq68brm6fwdq6";
       }
-      {
-        name = "vim";
-        publisher = "vscodevim";
-        version = "1.10.2";
-        sha256 = "0nvn4kv0dsqd67qz49jxrn0lyqvs63g1ahqbf16qcj9pzzkhk4y7";
-      }
+
+      # PureScript IDE
       {
         name = "ide-purescript";
         publisher = "nwolverson";
         version = "0.20.8";
         sha256 = "16avxmb1191l641r6pd99lw2cgq8gdfipb9n7d0czx1g9vfjr3ip";
       }
+
+      # PureScript language server
       {
         name = "language-purescript";
         publisher = "nwolverson";
         version = "0.2.1";
         sha256 = "18n35wp55c6k1yr2yrgg2qjmzk0vhz65bygfdk0z2p19pa4qhxzs";
       }
+
+      # PureScript formatting plugin
       {
         name = "vscode-purty";
         publisher = "mvakula";
         version = "0.3.0";
         sha256 = "0hjp3c7aw6ykzw6aim72hmissdxmr63fy5nyhzwlljjyzc66m7fs";
       }
-      {
-        name = "language-haskell";
-        publisher = "justusadam";
-        version = "2.6.0";
-        sha256 = "1891pg4x5qkh151pylvn93c4plqw6vgasa4g40jbma5xzq8pygr4";
-      }
+
     ];
 
     # vscode settings.json is made read-only and controlled via this section; editing settings
@@ -358,13 +364,13 @@ in
       # languages
       "purescript.addNpmPath" = true;
       "purescript.addSpagoSources" = true;
-      "purescript.buildCommand" = "spago build -- --json-errors";
+      "purescript.buildCommand" = "spago build --purs-args --json-errors";
 
       # theme
       "workbench.colorTheme" = "Nord";
       "editor.tokenColorCustomizations" = {
         "[Nord]" = {
-          "textMateRules" = [ 
+          "textMateRules" = [
             {
               "scope" = [ "entity.name.type.purescript" ];
               "settings" = {
@@ -376,6 +382,7 @@ in
       };
 
       # misc
+      "files.trimTrailingWhitespace" = true;
       "workbench.activityBar.visible" = false;
       "breadcrumbs.enabled" = true;
       "git.autofetch" = true;
@@ -402,7 +409,7 @@ in
       i3Support = true;
       pulseSupport = true;
     };
-    extraConfig = 
+    extraConfig =
     let
       white = "#ECEFF4";
       gray = "#65737E";
@@ -655,12 +662,12 @@ in
     windowManager.i3 = let modifier = "Mod4"; in {
       enable = true;
 
-      config = { 
+      config = {
         modifier = "${modifier}";
 
         bars = [ ];
 
-        keybindings = 
+        keybindings =
         lib.mkOptionDefault {
           "${modifier}+Return" = "exec kitty";
           "${modifier}+q" = "kill";
@@ -681,23 +688,23 @@ in
         # ensure these commands are run when i3 is restarted
         startup = [
           { command = "${pkgs.feh}/bin/feh --bg-fill ${bg-path}";
-            always = true; 
-            notification = false; 
+            always = true;
+            notification = false;
           }
-          { command = "systemctl --user restart polybar"; 
-            always = true; 
-            notification = false; 
+          { command = "systemctl --user restart polybar";
+            always = true;
+            notification = false;
           }
-          { command = "albert"; 
-            always = true; 
-            notification = false; 
+          { command = "albert";
+            always = true;
+            notification = false;
           }
         ];
 
       };
 
     extraConfig = ''
-      default_border pixel 1 
+      default_border pixel 1
       hide_edge_borders smart
     '';
     };

@@ -9,9 +9,14 @@
       <nixos-hardware/apple/macbook-pro/12-1>
     ];
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    # Ensure the exfat file type is supported when loading USB devices
+    supportedFilesystems = [ "exfat" ];
+
+    # Use the systemd-boot EFI boot loader.
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+  };
 
   # Set up networking
   networking = {
@@ -19,13 +24,14 @@
 
     # Enables wireless support via networkmanager
     networkmanager = {
-      enable = true; 
+      enable = true;
     };
   };
 
   # Select internationalisation properties.
   i18n = {
-    consoleFont = "latarcyrheb-sun32"; # for larger font sizes on system load
+    # for larger font sizes on system load
+    consoleFont = "latarcyrheb-sun32";
     consoleKeyMap = "dvorak";
     defaultLocale = "en_US.UTF-8";
   };
@@ -34,28 +40,33 @@
 
   # List packages installed in system profile.
   environment = {
+    variables.EDITOR = "vi";
+
     systemPackages = with pkgs; [
       # basic
-      wget vim
+      wget lsof
 
-      # debug
-      pastebinit
-
-      # system
-      light powertop networkmanagerapplet 
+      # services
+      light powertop networkmanagerapplet
 
       # fonts
-      fontconfig-ultimate 
+      fontconfig-ultimate
     ];
   };
 
-  # wrapper for backlight; 
-  # NOTE: also must enable hardware.brightness.ctl and add user to the "video" group
+  # Wrapper for backlight. Must enable hardware.brightness.ctl and add
+  # user to the "video" group as well.
   programs.light.enable = true;
 
   powerManagement = {
     # run powertop --auto-tune on startup
     powertop.enable = true;
+  };
+
+  # Virtualbox is generally used in headless mode
+  virtualisation.virtualbox = {
+    host.enable = true;
+    host.headless = true;
   };
 
   # List services that you want to enable:
@@ -72,37 +83,49 @@
     # thermald.enable = true;
 
     # monitor and control Macbook Pro fans
-    mbpfan = { 
+    mbpfan = {
       # see mbpfan.nix file in nixpkgs for extra config options
       enable = true;
     };
 
-    # Enable dbus + dconf to manage system dialogs ('select download location', etc.)
+    # Enable dbus + dconf to manage system dialogs
     dbus = {
       packages = with pkgs; [ gnome3.dconf ];
     };
 
-    # Remap what happens on power key press
+    # Remap what happens on power key press so it suspends rather than
+    # shutting don immediately
     logind = {
       extraConfig = ''
         HandlePowerKey=suspend
       '';
     };
 
-    # Untested: enable printing with Brother driversc
+    # Enable printing with Brother drivers
     printing = {
       enable = true;
       drivers = with pkgs; [ gutenprint gutenprintBin brlaser ];
     };
-    
+
+    postgresql = {
+      enable = true;
+      package = pkgs.postgresql_11;
+      enableTCPIP = true;
+
+      authentication = ''
+        local all all trust
+        host all all 0.0.0.0/0 trust
+      '';
+    };
+
     # Enable the X11 windowing system
     xserver = {
       enable = true;
       autorun = true;
       dpi = 192;
 
-      # support external monitors via DisplayPort in addition to the default
-      # screen eDP (use `xrandr` to list)
+      # support external monitors via DisplayPort in addition to the
+      # default screen eDP (use `xrandr` to list)
       xrandrHeads = [ "eDP" "DisplayPort-0" ];
 
       desktopManager = {
@@ -124,7 +147,7 @@
       # Enable touchpad support
       libinput = {
         enable = true;
-        naturalScrolling = false;
+        naturalScrolling = true;
       };
     };
   };
@@ -177,11 +200,14 @@
     uid = 1000;
   };
 
-  # Allow unfree packages system-wide. To allow access to unfree packages in nix-env, also set:
+  # Allow unfree packages system-wide. To allow access to unfree packages
+  # in nix-env, also set:
+  #
   # ~/.config/nixpkgs/config.nix to { allowUnfree = true; }
-  nixpkgs.config = { 
+  nixpkgs.config = {
     allowUnfree = true;
   };
 
-  system.stateVersion = "18.09"; # be *very* careful about changing this
+  # don't change this
+  system.stateVersion = "18.09";
 }
