@@ -30,6 +30,9 @@ in
     # writing
     jrnl typora
 
+    # lorri support
+    direnv
+
     # nix utilities
     nix-prefetch-git
 
@@ -49,7 +52,7 @@ in
     htop ranger zathura xclip tree
 
     # applications
-    firefox spotify-4k slack anki kitty
+    firefox brave spotify-4k slack anki kitty
   ];
 
   home.keyboard = {
@@ -221,6 +224,10 @@ in
       # save multi-line commands as single entries
       "cmdhist"
     ];
+
+    initExtra = ''
+      eval "$(${pkgs.direnv}/bin/direnv hook bash)"
+    '';
   };
 
   # tmux
@@ -400,6 +407,11 @@ in
       };
     };
   };
+
+  # https://github.com/target/lorri
+  services.lorri.enable = true;
+
+  services.blueman-applet.enable = true;
 
   services.redshift = {
     enable = true;

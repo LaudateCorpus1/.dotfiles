@@ -1,7 +1,7 @@
 let
   vimPluginsOverlay = self: super: {
     vimPlugins = super.vimPlugins // {
-      # Only necessary while on 19.09
+      # Only necessary while on 19.09. Remove once upgraded.
       psc-ide-vim = self.vimUtils.buildVimPluginFrom2Nix {
         pname = "psc-ide-vim";
         version = "2019-09-17";

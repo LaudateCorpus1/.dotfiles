@@ -22,6 +22,11 @@
   networking = {
     hostName = "nixos";
 
+    # temporary while testing functional-monorepo
+    extraHosts = ''
+      192.168.56.107 hydra.functionalmonorepo.com
+    '';
+
     # Enables wireless support via networkmanager
     networkmanager = {
       enable = true;
@@ -30,27 +35,25 @@
 
   # Select internationalisation properties.
   i18n = {
-    # for larger font sizes on system load
-    consoleFont = "latarcyrheb-sun32";
-    consoleKeyMap = "dvorak";
     defaultLocale = "en_US.UTF-8";
   };
 
+  # for larger font sizes on system load
+  console.font = "latarcyrheb-sun32";
+  console.keyMap = "dvorak";
+
   time.timeZone = "America/Los_Angeles";
 
-  # List packages installed in system profile.
   environment = {
     variables.EDITOR = "vi";
 
+    # List packages installed in system profile.
     systemPackages = with pkgs; [
       # basic
-      wget lsof
+      wget lsof vim
 
       # services
       light powertop networkmanagerapplet
-
-      # fonts
-      fontconfig-ultimate
     ];
   };
 
@@ -76,11 +79,11 @@
     # automatically change xrandr profiles on display change
     autorandr.enable = true;
 
-    # auto-hibernate on low battery
-    upower.enable = true;
+    # bluetooth control
+    blueman.enable = true;
 
     # monitor and manage CPU temp, throttling as needed
-    # thermald.enable = true;
+    thermald.enable = true;
 
     # monitor and control Macbook Pro fans
     mbpfan = {
@@ -130,8 +133,9 @@
 
       desktopManager = {
         xterm.enable = false;
-        default = "none";
       };
+
+      displayManager.defaultSession = "none+i3";
 
       displayManager.lightdm = {
         enable = true;
@@ -140,7 +144,6 @@
       };
 
       windowManager = {
-        default = "i3";
         i3.enable = true;
       };
 
@@ -160,11 +163,6 @@
       enable = true;
       antialias = true;
       useEmbeddedBitmaps = true;
-
-      ultimate = {
-        enable = true;
-        preset = "osx";
-      };
 
       defaultFonts = {
         serif = [ "Source Serif Pro" "DejaVu Serif" ];
@@ -187,8 +185,12 @@
   # Hardware options
   sound.enable = true;
   hardware = {
-    pulseaudio.enable = true;
-    brightnessctl.enable = true;
+    pulseaudio = {
+      enable = true;
+      package = pkgs.pulseaudioFull;
+    };
+
+    bluetooth.enable = true;
   };
 
   # Define a user account.
